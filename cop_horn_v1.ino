@@ -1,13 +1,23 @@
 int buttonPin = 7;
 int speakerPin = 8;
 boolean isButtonPressed = false;
-float modulator = 335;
-float highFreq = 1535;
-float lowFreq = 630;
 float currentTime = 0;
 long nextDelay = 0;
+unsigned int delayTable[] = {
+  769,
+  769,
+  769,
+  769,
+  769,
+  769,
+  769,
+  384,
+  537,
+  537,
+  537,
+  312,
+};
 void setup() {
-  // put your setup code here, to run once:
   pinMode(buttonPin, INPUT_PULLUP);
   pinMode(speakerPin, OUTPUT);
   currentTime = micros();
@@ -15,32 +25,14 @@ void setup() {
 
 void loop() {
   if(!digitalRead(buttonPin)) {
-    oneCycle();
+    makeTone();
   }
 
 }
 
-void oneCycle() {
-  long currentTime = micros();
-  //while (micros() - currentTime < 3750) {
-  while (micros() - currentTime < (1 / modulator * 750000)) {
-    makeTone(lowFreq);
+void makeTone() {
+  for(int i = 0; i < 12; i++) {
+    digitalWrite(speakerPin, i%2);
+    delayMicroseconds(delayTable[i] - 4);
   }
-  currentTime = micros();
-  //while (micros() - currentTime < 1250) {
-  while (micros() - currentTime < (1 / modulator * 250000)) {
-    makeTone(highFreq);
-  }
-}
-
-void makeTone(float frequency) {
-  float period = 1000000 / frequency;  
-  digitalWrite(speakerPin, HIGH);
-  delayMicroseconds(period / 2);
-  digitalWrite(speakerPin, LOW);
-  delayMicroseconds(period / 2);
-}
-
-void getSignal() {
-  
 }
